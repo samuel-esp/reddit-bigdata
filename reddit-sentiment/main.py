@@ -6,7 +6,7 @@ from textblob import TextBlob
 
 if __name__ == '__main__':
 
-    consumer = KafkaConsumer("reddit-posts", auto_offset_reset='earliest', enable_auto_commit=True, group_id=None,
+    consumer = KafkaConsumer("reddit-posts-dev", auto_offset_reset='earliest', enable_auto_commit=True, group_id=None,
                              value_deserializer=lambda x: loads(x.decode('utf-8')))
 
     producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
@@ -22,9 +22,9 @@ if __name__ == '__main__':
 
         # sending posts to other kafka microservices
         if sentiment >= 0:
-            producer.send("reddit-positive", message)
+            producer.send("reddit-positive-dev", message)
         else:
-            producer.send("reddit-negative", message)
+            producer.send("reddit-negative-dev", message)
 
         print(sentiment)
         print('{}'.format(message))

@@ -1,10 +1,8 @@
-package com.example.redditpositive.messaging;
+package com.example.redditnegative.messaging;
 
-import com.example.redditpositive.model.RedditPost;
-import com.example.redditpositive.service.RedditPostService;
+import com.example.redditnegative.model.RedditPost;
+import com.example.redditnegative.service.RedditPostService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
-import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,15 +11,15 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class KafkaPositiveRedditListener {
+public class KafkaNegativeRedditListener {
 
     @Autowired
     private RedditPostService redditPostService;
 
-    private static final String TOPIC_NAME = "reddit-positive-dev";
+    private static final String TOPIC_NAME = "reddit-negative-dev";
 
     @KafkaListener(topics = TOPIC_NAME, groupId = "group-id")
-    public void consumeMessage(@Payload String post) {
+    public void consumeMessage(@Payload String post){
         JSONObject jsonObj = new JSONObject(post);
 
         RedditPost r = RedditPost.builder()

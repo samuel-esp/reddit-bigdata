@@ -88,7 +88,7 @@ if __name__ == '__main__':
                 'commentsCount': post['data']['num_comments']
             }
             print("post sent")
-            producer.send("reddit-posts", dataPost)
+            producer.send("reddit-posts-dev", dataPost)
             #print(response.json())
 
         print("message sent")

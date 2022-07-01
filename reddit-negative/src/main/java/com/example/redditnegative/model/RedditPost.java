@@ -1,16 +1,15 @@
-package com.example.redditpositive.model;
+package com.example.redditnegative.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.annotation.processing.Generated;
 import java.util.Date;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString
-@Document(collection = "positive_reddit_posts")
+@Document(collection = "negative_reddit_posts")
 public class RedditPost {
 
     private String id;
