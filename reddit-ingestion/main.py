@@ -71,10 +71,42 @@ if __name__ == '__main__':
     angerSub = requests.get("https://oauth.reddit.com/r/anger/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
+    europeSub = requests.get("https://oauth.reddit.com/r/europe/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    gamingSub = requests.get("https://oauth.reddit.com/r/gaming/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    formula1Sub = requests.get("https://oauth.reddit.com/r/formula1/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    todayilearnedSub = requests.get("https://oauth.reddit.com/r/todayilearned/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    marvelstudiosSub = requests.get("https://oauth.reddit.com/r/marvelstudios/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    healthyfoodSub = requests.get("https://oauth.reddit.com/r/healtyfood/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    politicsSub = requests.get("https://oauth.reddit.com/r/politics/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    askredditSub = requests.get("https://oauth.reddit.com/r/askreddit/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    discordappSub = requests.get("https://oauth.reddit.com/r/discordapp/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    twitchSub = requests.get("https://oauth.reddit.com/r/twitch/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+
     print("extraction completed")
 
     responseData = [pythonSub, csCareerSub, newsSub, nbaSub, appleSub, jobsSub, tennisSub, moviesSub, offMyChestSub,
-                    foreverAloneSub, depressionSub, angerSub]
+                    foreverAloneSub, depressionSub, angerSub, europeSub, gamingSub, formula1Sub, todayilearnedSub, marvelstudiosSub,
+                    healthyfoodSub, politicsSub, askredditSub, discordappSub, twitchSub]
 
     for response in responseData:
         for post in response.json()["data"]["children"]:
