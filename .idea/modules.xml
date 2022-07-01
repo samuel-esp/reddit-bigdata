@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/reddit-bigdata.iml" filepath="$PROJECT_DIR$/reddit-bigdata.iml" />
       <module fileurl="file://$PROJECT_DIR$/reddit-ingestion/reddit-ingestion.iml" filepath="$PROJECT_DIR$/reddit-ingestion/reddit-ingestion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reddit-negative/reddit-negative.iml" filepath="$PROJECT_DIR$/reddit-negative/reddit-negative.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reddit-positive/reddit-positive.iml" filepath="$PROJECT_DIR$/reddit-positive/reddit-positive.iml" />
       <module fileurl="file://$PROJECT_DIR$/reddit-sentiment/reddit-sentiment.iml" filepath="$PROJECT_DIR$/reddit-sentiment/reddit-sentiment.iml" />
     </modules>
   </component>

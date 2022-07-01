@@ -1,0 +1,34 @@
+package com.example.redditpositive.model;
+
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.annotation.processing.Generated;
+import java.util.Date;
+
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
+@Document(collection = "reddit_posts")
+public class RedditPost {
+
+    private String id;
+
+    private String subreddit;
+
+    private String user;
+
+    @Id
+    private String title;
+
+    private String selftext;
+
+    private Float score;
+
+    private Date time;
+
+    private Float commentsCount;
+
+
+}

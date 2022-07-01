@@ -25,67 +25,71 @@ if __name__ == '__main__':
 
     # Getting 100 Posts From Each Subreddit
     i = 0
-    pythonSub = requests.get("https://oauth.reddit.com/r/python/hot", headers=headers, params={'limit':'100'})
+    pythonSub = requests.get("https://oauth.reddit.com/r/python/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    csCareerSub = requests.get("https://oauth.reddit.com/r/cscareerquestions/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    csCareerSub = requests.get("https://oauth.reddit.com/r/cscareerquestions/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    newsSub = requests.get("https://oauth.reddit.com/r/news/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    newsSub = requests.get("https://oauth.reddit.com/r/news/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    nbaSub = requests.get("https://oauth.reddit.com/r/nba/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    nbaSub = requests.get("https://oauth.reddit.com/r/nba/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    appleSub = requests.get("https://oauth.reddit.com/r/spotify/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    appleSub = requests.get("https://oauth.reddit.com/r/spotify/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    jobsSub = requests.get("https://oauth.reddit.com/r/jobs/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    jobsSub = requests.get("https://oauth.reddit.com/r/jobs/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    tennisSub = requests.get("https://oauth.reddit.com/r/tennis/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    tennisSub = requests.get("https://oauth.reddit.com/r/tennis/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    moviesSub = requests.get("https://oauth.reddit.com/r/movies/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    moviesSub = requests.get("https://oauth.reddit.com/r/movies/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    offMyChestSub = requests.get("https://oauth.reddit.com/r/offmychest/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    offMyChestSub = requests.get("https://oauth.reddit.com/r/offmychest/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    depressionSub = requests.get("https://oauth.reddit.com/r/depression/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    depressionSub = requests.get("https://oauth.reddit.com/r/depression/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
-    time.sleep(60)
-    foreverAloneSub = requests.get("https://oauth.reddit.com/r/foreveralone/hot", headers=headers, params={'limit':'100'})
+    #time.sleep(60)
+    foreverAloneSub = requests.get("https://oauth.reddit.com/r/foreveralone/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    angerSub = requests.get("https://oauth.reddit.com/r/anger/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
     print("extraction completed")
 
     responseData = [pythonSub, csCareerSub, newsSub, nbaSub, appleSub, jobsSub, tennisSub, moviesSub, offMyChestSub,
-                    foreverAloneSub, depressionSub]
+                    foreverAloneSub, depressionSub, angerSub]
 
     for response in responseData:
         for post in response.json()["data"]["children"]:
             dataPost = {
                 'subreddit': post['data']['subreddit'],
+                'user': post['data']['author'],
                 'title': post['data']['title'],
                 'selftext': post['data']['selftext'],
-                'upvote_ratio': post['data']['upvote_ratio'],
-                'ups': post['data']['ups'],
-                'downs': post['data']['downs'],
-                'score': post['data']['score']
+                'score': post['data']['score'],
+                'time': post['data']['created_utc'],
+                'commentsCount': post['data']['num_comments']
             }
             print("post sent")
             producer.send("reddit-posts", dataPost)
+            #print(response.json())
 
         print("message sent")
 
