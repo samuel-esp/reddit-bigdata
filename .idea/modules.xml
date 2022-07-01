@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/reddit-bigdata.iml" filepath="$PROJECT_DIR$/reddit-bigdata.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reddit-ingestion/reddit-ingestion.iml" filepath="$PROJECT_DIR$/reddit-ingestion/reddit-ingestion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reddit-sentiment/reddit-sentiment.iml" filepath="$PROJECT_DIR$/reddit-sentiment/reddit-sentiment.iml" />
+    </modules>
+  </component>
+</project>
