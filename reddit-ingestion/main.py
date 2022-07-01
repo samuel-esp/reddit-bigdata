@@ -101,12 +101,42 @@ if __name__ == '__main__':
     twitchSub = requests.get("https://oauth.reddit.com/r/twitch/new", headers=headers, params={'limit':'100'})
     i = i + 1
     print("subreddit " + str(i) + " finished")
+    tinderSub = requests.get("https://oauth.reddit.com/r/tinder/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    techsupportSub = requests.get("https://oauth.reddit.com/r/techsupport/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    musicSub = requests.get("https://oauth.reddit.com/r/music/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    androidSub = requests.get("https://oauth.reddit.com/r/android/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    baseballSub = requests.get("https://oauth.reddit.com/r/baseball/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    nostupidquestionsSub = requests.get("https://oauth.reddit.com/r/nostupidquestions/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    explainlikeimfiveSub = requests.get("https://oauth.reddit.com/r/explainlikeimfive/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    outoftheloopSub = requests.get("https://oauth.reddit.com/r/outoftheloop/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+    instagramSub = requests.get("https://oauth.reddit.com/r/instagram/new", headers=headers, params={'limit':'100'})
+    i = i + 1
+    print("subreddit " + str(i) + " finished")
+
 
     print("extraction completed")
 
     responseData = [pythonSub, csCareerSub, newsSub, nbaSub, appleSub, jobsSub, tennisSub, moviesSub, offMyChestSub,
-                    foreverAloneSub, depressionSub, angerSub, europeSub, gamingSub, formula1Sub, todayilearnedSub, marvelstudiosSub,
-                    healthyfoodSub, politicsSub, askredditSub, discordappSub, twitchSub]
+                    foreverAloneSub, depressionSub, angerSub, europeSub, gamingSub, formula1Sub, todayilearnedSub,
+                    marvelstudiosSub, healthyfoodSub, politicsSub, askredditSub, discordappSub, twitchSub, tinderSub,
+                    techsupportSub, musicSub, androidSub, baseballSub, nostupidquestionsSub, explainlikeimfiveSub,
+                    outoftheloopSub, instagramSub]
 
     for response in responseData:
         for post in response.json()["data"]["children"]:
