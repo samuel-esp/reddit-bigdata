@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="nosqlTest" uuid="08e53369-ac16-49e4-a460-4936e055f35e">
+    <data-source source="LOCAL" name="@localhost" uuid="c191de9d-c7f3-4831-8c34-af0743368e04">
       <driver-ref>mongo</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
