@@ -20,6 +20,8 @@ if __name__ == '__main__':
         blob = TextBlob(postText)
         sentiment = blob.sentiment.polarity
 
+        message["scoreSentiment"] = sentiment
+
         # sending posts to other kafka microservices
         if sentiment >= 0:
             producer.send("reddit-positive-dev", message)

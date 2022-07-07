@@ -29,5 +29,7 @@ public class RedditPost {
 
     private Float commentsCount;
 
+    private Float scoreSentiment;
+
 
 }

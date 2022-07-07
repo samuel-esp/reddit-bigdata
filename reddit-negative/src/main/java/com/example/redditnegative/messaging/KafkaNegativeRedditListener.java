@@ -30,6 +30,7 @@ public class KafkaNegativeRedditListener {
                 .subreddit(jsonObj.getString("subreddit"))
                 .score(jsonObj.getFloat("score"))
                 .time(new java.util.Date((long)jsonObj.getFloat("time")*1000))
+                .scoreSentiment(jsonObj.getFloat("scoreSentiment"))
                 .build();
 
         redditPostService.savePost(r);
