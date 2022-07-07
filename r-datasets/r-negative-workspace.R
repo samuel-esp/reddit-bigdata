@@ -31,10 +31,10 @@ group <- as.data.table(data)
 minScorePost <- group[group[, .I[which.min(score)], by=subreddit]$V1]
 
 #subreddit piu' presente nel dataset -> maggiore polarita' nella negativita'
-subredditCount = count(data, data$subreddit)
-ggplot(subredditCount, aes(x=data$subreddit, y=n)) + geom_bar(stat='identity', width=1)
+subredditCount = count(data, subreddit = data$subreddit)
+ggplot(subredditCount, aes(x=n, y=subreddit)) + geom_bar(stat='identity', width=1)
 
-#utenti con atteggiamento piu' negativo tra tutti i subreddit esaminati
+#utenti con atteggiamento piu' positivo tra tutti i subreddit esaminati
 mostNegativeUser = count(data, data$user)
 
 
