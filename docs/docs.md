@@ -93,7 +93,8 @@ Questo microservizio inizialmente consuma i messaggi dal canale kafka per ottene
 ```python
 if __name__ == '__main__':
 
-    consumer = KafkaConsumer("reddit-posts-dev", auto_offset_reset='earliest', enable_auto_commit=True, group_id=None,
+    consumer = KafkaConsumer("reddit-posts-dev", auto_offset_reset='earliest',  
+    enable_auto_commit=True, group_id=None,
                              value_deserializer=lambda x: loads(x.decode('utf-8')))
 
     producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
@@ -116,3 +117,255 @@ if __name__ == '__main__':
             producer.send("reddit-negative-dev", message)
 
 ```
+<br><br>
+
+# Analytical Data Store
+## MongoDB
+La tecnologia scelta per memorizzare i dati estratti è stata MongoDB, un sistema NoSQL document-based. Questa scelta è stata motivata principalmente da due fattori: in primo luogo le API ufficiali della piattaforma Reddit potrebbero cambiare, aggiornarsi e rendere disponibili nuovi tipi di informazioni, un database non relazionale come Mongo permette di aggiungere nuove colonne semplicemente e in modo scalabile, cosa che un database relazionale classico non può offrire.
+
+Non è stato scelto un Key-Value database in quanto solitamente sistemi di questo tipo vengono utilizzati in casi in cui sono presenti dati relativi ad informazioni personali degli utenti e riguardo le loro sessioni all'interno delle piattaforme interessate, inoltre sono sconsigliati quando si eseguono query by data, cosa che invece fa parte degli obiettivi del progetto.
+
+Database document-based, così come quelli column-family (per esempio Cassandra), sono consigliati nel caso in cui si debba interagire con piattaforme web per eseguire operazioni di analisi (entrambi i sistemi sono anche compatibili con R, tool molto usato per l'analisi). La decisione finale è stata indirizzata verso MongoDB prettamente per ragioni di maggiore dimestichezza nel suo utilizzo.
+<br>
+
+## Struttura del database
+Come anticipato nella sezione relativa alla data ingestion (sotto-sezione Reddit API), i campi dei post recuperati che sono stati effettivamente estratti sono i seguenti:
+
+| Campo  | Descrizione  |
+|:---|:---|
+| _id | Titolo del post utilizzato come id del record |
+| _class  | Tipo di oggetto salvato, corrisponde al tipo della classe Java associata | 
+| commentsCount  | Numero di commenti presenti sul post |
+| score  | Score totale del post, differenza tra upvote e downvote dati dagli utenti |
+| selftext  | Corpo del testo del post | 
+| subreddit  | Subreddit in cui è stato postato il post |
+| time  | Data del post |
+| user  | Autore del post | 
+| scoreSentiment  | Score registrato dalla funzione di sentiment (TextBlob) |
+
+Si nota che come id è stato scelto il titolo, questo perché tra tutti i parametri è quello che ha maggiori probabilità di essere univoco ed inoltre la piattaforma Reddit impedisce agli autori dei post di modificarlo. In questo modo, nel caso in cui ci fosse poca attività in un subreddit, nel caso gli script di ingestion ripescassero di nuovo un post già salvato, esso verrebbe scartato garantendo l'assenza di duplicati nel database.
+
+## Microservizi Java
+Sono stati svilupatti due microservizi (questa volta in Java e non più Python) che si occupano di memorizzare i dati nel database locale. Sono due microservizi distinti in quanto si occupano di raccogliere i due diversi risultati ottenuti dallo script di sentimenti e inviati sul canale Kafka su due topic diversi: "reddit-positive-dev" e "reddit-negative-dev". Il primo microservizio raccoglie tutti i post considerati come positivi e li memorizza in un primo database, mentre il secondo microservizio tutti quei post considerati come negativi e li memorizza in un secondo database distinto.
+
+Ciascun microservizio si interfaccia al sistema MongoDB appoggiandosi allo strumento offerto dalla libreria SpringBoot. Il supporto nativo di SpringBoot per i database di Mongo è stata una delle motivazioni per cui è stato scelto di utilizzare Java come linguaggio di programmazione di questi due microservizi.
+
+A seguire il codice utilizzato in questi due microservizi, a titolo di esempio verrà mostrato quello relativo ai post "positivi":
+
+<br>
+
+1. **Model**
+```java
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
+@Document(collection = "positive_reddit_posts")
+public class RedditPost {
+
+    private String id;
+
+    private String subreddit;
+
+    private String user;
+
+    @Id
+    private String title;
+
+    private String selftext;
+
+    private Float score;
+
+    private Date time;
+
+    private Float commentsCount;
+
+    private Float scoreSentiment;
+
+}
+```
+
+Viene definita una classe Java, "RedditPost", sarà utilizzata per tutti gli oggetti che verrano creati a partire dai messaggi ricevuti dal canale Kafka e che poi verranno memorizzati nel database. Tramite l'annotazione di SpringBoot **@Document** si segnala già che la classe sarà utilizzata per oggetti creati appositamente per essere salvati in un database Mongo.
+
+<br>
+
+2. **Messaging**
+
+```java
+@Slf4j
+@Service
+public class KafkaPositiveRedditListener {
+
+    @Autowired
+    private RedditPostService redditPostService;
+
+    private static final String TOPIC_NAME = "reddit-positive-dev";
+
+    @KafkaListener(topics = TOPIC_NAME, groupId = "group-id")
+    public void consumeMessage(@Payload String post) {
+        JSONObject jsonObj = new JSONObject(post);
+
+        RedditPost r = RedditPost.builder()
+                .title(jsonObj.getString("title"))
+                .user(jsonObj.getString("user"))
+                .commentsCount(jsonObj.getFloat("commentsCount"))
+                .selftext(jsonObj.getString("selftext"))
+                .subreddit(jsonObj.getString("subreddit"))
+                .score(jsonObj.getFloat("score"))
+                .time(new java.util.Date((long)jsonObj.getFloat("time")*1000))
+                .scoreSentiment(jsonObj.getFloat("scoreSentiment"))
+                .build();
+
+        redditPostService.savePost(r);
+        log.info(r.toString());
+    }
+```
+Si prende dal canale Kafka tutti i messaggi inviati sul topic selezionato (in questo caso "reddit-positive-dev"). Ciascun messaggio viene elaborato come oggetto JSON, che viene deserializzato in un oggetto Java di tipo RedditPost, i cui attributi saranno proprio i campi selezionati precedentemente durante la fase di ingestion. A questo punto ogni oggetto creato viene salvato all'interno di una repository (se ne occuperà Service).
+
+<br>
+
+3. **Service**
+
+```java
+@Service
+public class RedditPostService {
+
+    @Autowired
+    private ReddItPostRepository reddItPostRepository;
+
+    public void savePost(RedditPost redditPost){
+        reddItPostRepository.save(redditPost);
+    }
+
+    public List<RedditPost> retrieveAllPost(){
+        return reddItPostRepository.findAll();
+    }
+}
+```
+La classe Service viene utilizzata come di consueto in un'architettura SpringBoot per salvare oggetti all'interno di repository e quindi database, sono quindi presenti il metodo "save(RedditPost)" e "retrieveAllPost()", il primo si occupa del salvataggio degli oggetti (sovrascrivendo quello di default in modo che accetti oggetti di tipo RedditPost) mentre il secondo può essere utile per future operazioni di analisi.
+
+<br><br>
+
+# Analytics and Report
+Per la fase di analisi dei dati estratti, si è ipotizzato di dover confrontare i vari subreddit fra di loro, cercando di osservare differenze per quanto riguarda la popolarità di certi argomenti, quali possano essere quelli attrivuibili ad umori più positivi e quali più negativi, osservando inoltre se la risposta da parte di ciascuna community rispecchia quei determinati umori.
+
+La tecnologia scelta per questa fase è stato il linguaggio R, questa decisione è stata presa sulla base del gran numero di strumenti offerti dal linguaggio, sia dal punto di vista delle query realizzabili sia per il fatto che, tramite l'IDE ufficiale RStudio è possibile visualizzare in tempo reale grafici di semplice interpretazione riguardo le query eseguite. Inoltre, R offre compatibilità completa con l'infrastruttura MongoDB, garantendo alta efficienza.
+
+## **Analisi**
+
+### 1. subredditByScore/Comments
+La prima analisi effettuata è stata quella di confrontare l'approvazione dei post positivi e quella dei negativi, osservando quali subdreddit fossero più sbilanciati in un senso in un database, anche in relazione alla loro controparte nell'altro DB.
+<br>
+Per fare ciò è stata realizzata una query che eseguisse una media di Score e numero di commenti dei post, raggruppati per subreddit di appartenenza. Questo perché se un post ha uno Score alto e/o un alto numero di commenti, è probabile che gli altri utenti della community condividano opinioni e umori degli autori dei post.
+
+```R
+subredditByScore = aggregate(data$score, by=list(Category=data$subreddit), FUN=mean)
+
+ggplot(subredditByScore, aes(x=x, y=Category)) + geom_bar(stat='identity', width=1)
+```
+
+| ![positive subredditByScore](img/positive_subredditByScore.png) |
+|:--:|
+| <b>Positive subredditByScore</b>|
+
+<br><br>
+
+| ![negative subredditByScore](img/negative_subredditByScore.png) |
+|:--:|
+| <b>Negative subredditByScore</b>|
+
+<br><br><br><br>
+
+```R
+subredditByComments = aggregate(data$commentsCount, by=list(Category=data$subreddit), FUN=mean)
+
+ggplot(subredditByComments, aes(x=x, y=Category)) + geom_bar(stat='identity', width=1)
+```
+
+
+
+| ![positive subredditByComments](img/positive_subredditByComments.png) |
+|:--:|
+| <b>Positive subredditByComments</b>|
+
+<br><br>
+
+| ![negative subredditByComments](img/negative_subredditByComments.png) |
+|:--:|
+| <b>Negative subredditByComments</b>|
+
+<br><br><br><br><br>
+
+### 2. maxScorePost/minScorePost
+La seconda analisi mira a estrarre quale post ha ottenuto uno score maggiore/minore, per ogni subreddit. Ciò può essere utile per capire che tipologie di post sono più in voga all'interno di ogni community e che argomenti vengono trattati all'interno di questi post, o viceversa quali sono gli argomenti da non trattare.
+
+```R
+group <- as.data.table(data)
+
+maxScorePost <- group[group[, .I[which.max(score)], by=subreddit]$V1]
+```
+
+| ![positive maxScorePost](img/positive_maxScorePost.png) |
+|:--:|
+| <b>Dettagli dei post positivi che hanno ottenuto score maggiore in ogni subreddit</b>|
+
+<br><br>
+
+| ![negative maxScorePost](img/negative_maxScorePost.png) |
+|:--:|
+| <b>Dettagli dei post negativi che hanno ottenuto score maggiore in ogni subreddit</b>|
+
+<br><br>
+
+```R
+group <- as.data.table(data)
+
+minScorePost <- group[group[, .I[which.min(score)], by=subreddit]$V1]
+```
+
+| ![positive minScorePost](img/positive_minScorePost.png) |
+|:--:|
+| <b>Dettagli dei post positivi che hanno ottenuto score minore in ogni subreddit</b>|
+
+<br><br>
+
+| ![negative minScorePost](img/negative_minScorePost.png) |
+|:--:|
+| <b>Dettagli dei post negativi che hanno ottenuto score minore in ogni subreddit</b>|
+
+<br><br><br><br><br>
+
+### 3. subredditCount
+La terza analisi si è incentrata sull'osservare quale fosse il subreddit più presente all'interno di un databse specifico, per monitorare quindi se un certo subreddit contiene più post positivi o negativi.
+
+```R
+subredditCount = count(data, subreddit = data$subreddit)
+
+ggplot(subredditCount, aes(x=n, y=subreddit)) + geom_bar(stat='identity', width=1)
+```
+
+| ![positive subredditCount](img/positive_subredditCount.png) |
+|:--:|
+| <b>Positive subredditCount</b>|
+
+<br><br>
+
+| ![negative subredditCount](img/negative_subredditCount.png) |
+|:--:|
+| <b>Negative subredditCount</b>|
+
+<br><br><br><br><br>
+
+### 4. mostPositiveUsers/mostNegativeUsers
+La quarta analisi mira a scoprire quali utenti sono più presenti all'interno di diversi subreddit, ciò può essere utile ad identificare quali subvreddit possono avere una community condivisa e quindi più interazioni tra gli stessi utenti o comunque tra utenti con interessi/opinioni comuni.
+
+```R
+#nel database dei post positivi
+mostPositiveUser = count(data, data$user)
+
+#nel database dei post negativi
+mostNegativeUser = count(data, data$user)
+```
+
+mostPositiveUser             |  mostNegativeUser 
+:-------------------------:|:-------------------------:
+![mostPositiveUser](img/mostPositiveUser.png)  |  ![mostNegativeUser](img/mostNegativeUser.png)
