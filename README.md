@@ -3,7 +3,7 @@ Progetto per il corso di Big Data, Università degli Studi di Roma Tre, a cura d
 | Nome| Matricola | E-mail | Profilo Github | Profilo Linkedin |
 |:---|:---|:---|:---|:---|
 | Simone Chilosi|522155|sim.chilosi@stud.uniroma3.it|[https://github.com/simochilo](https://github.com/simochilo)| https://www.linkedin.com/in/simone-chilosi-575260239/|
-| Samuel Esposito|000000|sam.esposito@stud.uniroma3.it|[https://github.com/samuel-esp](https://github.com/samuel-esp)| [https://www.linkedin.com/in/simone-chilosi-575260239/](https://www.linkedin.com/in/samuel-esposito-016036115/)|
+| Samuel Esposito|519611|sam.esposito@stud.uniroma3.it|[https://github.com/samuel-esp](https://github.com/samuel-esp)| [https://www.linkedin.com/in/simone-chilosi-575260239/](https://www.linkedin.com/in/samuel-esposito-016036115/)|
 
 <br><br>
 L'obiettivo di questo progetto è stato realizzare ed analizzare un'architettura Big Data, impiegando conoscenze apprese e tecnologie studiate durante il corso.
