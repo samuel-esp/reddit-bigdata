@@ -1,20 +1,19 @@
 install.packages("data.table")
 install.packages("ggplot2")
-install.packages("plotly")
 install.packages("dplyr")
 library(ggplot2)
-library(plotly)
 library(data.table)
 library(dplyr)
 
-data <- read.csv("/Users/samuel/Desktop/reddit-bigdata-bis/r-datasets/positive-reddit.tsv", sep = "\t")
+data <- read.csv("/home/simoc/Documents/reddit-bigdata/r-datasets/positive-reddit.tsv", sep = "\t")
 data
 
 data[is.na(data)] <- 0
 
 #subreddit con piu' approvazione ai post positivi
 subredditByScore = aggregate(data$score, by=list(Category=data$subreddit), FUN=mean)
-ggplot(subredditByScore, aes(x=x, y=Category)) + geom_bar(stat='identity', width=1)
+grafico1 <- ggplot(subredditByScore, aes(x=x, y=Category)) + geom_bar(stat='identity', width=1)
+grafico1
 
 #subreddit con piu' commenti sui post positivi 
 subredditByComments = aggregate(data$commentsCount, by=list(Category=data$subreddit), FUN=mean)
