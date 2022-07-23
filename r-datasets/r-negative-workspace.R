@@ -5,7 +5,7 @@ library(ggplot2)
 library(data.table)
 library(dplyr)
 
-data <- read.csv("/home/simoc/Documents/reddit-bigdata/r-datasets/negative-reddit.tsv", sep = "\t")
+data <- read.csv("/Users/samuel/Desktop/reddit-bigdata-bis/r-datasets/negative-reddit.tsv", sep = "\t")
 data
 
 data[is.na(data)] <- 0
