@@ -369,3 +369,25 @@ mostNegativeUser = count(data, data$user)
 mostPositiveUser             |  mostNegativeUser 
 :-------------------------:|:-------------------------:
 ![mostPositiveUser](img/mostPositiveUser.png)  |  ![mostNegativeUser](img/mostNegativeUser.png)
+
+### 5. scoreSentimentTrend
+La quinta analisi mira a scoprire i trend temporali dello score sentiment, ciò può essere utile per monitorare l'andamento dell'umore all'interno delle community prese d'esame.
+
+```R
+# andamento nel tempo dello score tra i post positivi
+scoreByDate = aggregate(data$scoreSentiment, by=list(Category=data$time), FUN=mean)
+scoreByDate[['Category']] <- as.POSIXct(scoreByDate[['Category']],format = "%Y-%m-%d")
+q <- subset(scoreByDate, Category> "2022-06-06" & Category < "2022-12-12")
+p <- ggplot(q, aes(x=Category, y=x)) + geom_line() + xlab("")
+show(p)
+```
+
+| ![positive minScorePost](img/positive_sentimentScoreTime.png) |
+|:--:|
+| <b>Dettagli dei post positivi che hanno ottenuto score minore in ogni subreddit</b>|
+
+<br><br>
+
+| ![negative minScorePost](img/negative_sentimentScoreTime.png) |
+|:--:|
+| <b>Dettagli dei post negativi che hanno ottenuto score minore in ogni subreddit</b>|
