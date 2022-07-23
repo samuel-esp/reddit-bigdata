@@ -384,10 +384,10 @@ show(p)
 
 | ![positive minScorePost](img/positive_sentimentScoreTime.png) |
 |:--:|
-| <b>Dettagli dei post positivi che hanno ottenuto score minore in ogni subreddit</b>|
+| <b>Andamento del sentiment score dei post positivi</b>|
 
 <br><br>
 
 | ![negative minScorePost](img/negative_sentimentScoreTime.png) |
 |:--:|
-| <b>Dettagli dei post negativi che hanno ottenuto score minore in ogni subreddit</b>|
+| <b>Andamento del sentiment score dei post negativi</b>|
