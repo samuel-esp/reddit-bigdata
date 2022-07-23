@@ -337,6 +337,8 @@ minScorePost <- group[group[, .I[which.min(score)], by=subreddit]$V1]
 ### 3. subredditCount
 La terza analisi si è incentrata sull'osservare quale fosse il subreddit più presente all'interno di un databse specifico, per monitorare quindi se un certo subreddit contiene più post positivi o negativi.
 
+<br><br>
+
 ```R
 subredditCount = count(data, subreddit = data$subreddit)
 
@@ -366,9 +368,13 @@ mostPositiveUser = count(data, data$user)
 mostNegativeUser = count(data, data$user)
 ```
 
+<br><br><br><br><br><br>
+
 mostPositiveUser             |  mostNegativeUser 
 :-------------------------:|:-------------------------:
 ![mostPositiveUser](img/mostPositiveUser.png)  |  ![mostNegativeUser](img/mostNegativeUser.png)
+
+<br><br>
 
 ### 5. scoreSentimentTrend
 La quinta analisi mira a scoprire i trend temporali dello score sentiment, ciò può essere utile per monitorare l'andamento dell'umore all'interno delle community prese d'esame.
@@ -391,3 +397,12 @@ show(p)
 | ![negative minScorePost](img/negative_sentimentScoreTime.png) |
 |:--:|
 | <b>Andamento del sentiment score dei post negativi</b>|
+
+<br><br>
+
+# Conclusioni
+In sintesi, durante lo svolgimento di questo progetto è stata realizzata ed analizzata un'architettura Big Data, a partire dalla data ingestion fino ad arrivare all'analisi dei dati estratti. 
+
+Sono stati estratti e memorizzati dati a partire dalla piattaforma Reddit mediante appositi script/microservizi Python e Java (con l'ausilio del framework Spring) su  database non relazionali MongoDB, per poi essere analizzati attraverso R per ricavare le informazioni descritte precedentemente.
+
+E' stato senza dubbio interessante approfondire alcune tra le tecnologie studiate durante il corso di Big Data (tra le quali Kafka, MongoDB, R) ottenendo  dei risultati certamente soddisfacenti.
